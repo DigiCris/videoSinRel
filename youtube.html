@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reproductor de YouTube</title>
+</head>
+<body>
+  <div id="player"></div>
+
+  <script>
+    // Carga la API de YouTube Player
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // Crea una variable global para el reproductor
+    var player;
+
+    // Función que se invoca cuando la API de YouTube Player está lista
+    function onYouTubeIframeAPIReady() {
+      // Crea el reproductor de YouTube
+      player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        videoId: 'kCWxsh75-Bg',
+        playerVars: {
+          rel: 0, // Desactiva videos relacionados (no funciona del todo bien)
+          autoplay: 1, // Reproducción automática
+          mute: 1, // Silencia el video
+          playsinline: 1 // Reproduce el video en línea en dispositivos móviles
+        },
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+// Función que se invoca cuando cambia el estado de reproducción del video
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    player.seekTo(0); // Se posiciona en el segundo 0
+    player.pauseVideo(); // Se pausa el video
+  }
+}
+  </script>
+</body>
+</html>
