@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Modal con PDF y evento de scroll</title>
+  <style>
+    /* Estilos para el modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+    }
+    
+    /* Estilos adicionales para el contenido dentro del modal */
+    .modal-content canvas {
+      display: block;
+      margin: 10px auto;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Modal con PDF y evento de scroll</h1>
+  
+  <button id="openModalBtn">Abrir Modal</button>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content" id="pdfViewer"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+  <script>
+    var modal = document.getElementById("myModal");
+    var openModalBtn = document.getElementById("openModalBtn");
+    var pdfViewer = document.getElementById("pdfViewer");
+
+    openModalBtn.addEventListener("click", function() {
+      modal.style.display = "block";
+
+      // Ruta al archivo PDF
+      var pdfUrl = "./mipdf.pdf";
+
+      // Carga y muestra el PDF usando PDF.js
+      pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+        var numPages = pdf.numPages;
+
+        // Itera sobre todas las páginas del PDF
+        for (var pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+          pdf.getPage(pageNumber).then(function(page) {
+            var canvas = document.createElement("canvas");
+            var context = canvas.getContext("2d");
+            var viewport = page.getViewport({ scale: 1 });
+
+            // Establece el tamaño del canvas
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            // Agrega el canvas al visor del PDF
+            pdfViewer.appendChild(canvas);
+
+            // Renderiza la página en el canvas
+            page.render({ canvasContext: context, viewport: viewport });
+          });
+        }
+      });
+    });
+
+    modal.addEventListener("scroll", function() {
+      var scrollTop = modal.scrollTop;
+      var scrollHeight = modal.scrollHeight;
+      var clientHeight = modal.clientHeight;
+
+      console.log("Valor de scrollTop:", modal.scrollTop);
+      console.log("Valor de scrollHeight:", modal.scrollHeight);
+      console.log("Valor de clientHeight:", modal.clientHeight);
+
+      if (scrollTop + clientHeight >= scrollHeight) {
+        // Se ha llegado al final del desplazamiento
+        alert("¡Llegaste al final!");
+      }
+    });
+  </script>
+</body>
+</html>
